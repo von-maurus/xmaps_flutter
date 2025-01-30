@@ -1,6 +1,18 @@
 # xmaps_app
 
-A new Flutter project.
+A Maps test application for learning purposes. Made based on the Flutter Advanced course of Fernando Herrera. 
+
+## We covered various topics like: 
+
+- Gmaps API with Mapbox API. Both great, but gmaps its a paid API especially for locations that its a featured use in this app. 
+- BLoC pattern design and project organization using clean code practices. 
+- We covered Maps APIs for both iOS and Android platform. 
+- Permissions management for both platforms.
+- Location and realtime.
+- Linter configuration.
+- Map custom design. 
+- Markers custom design.
+
 
 ## Getting Started
 
