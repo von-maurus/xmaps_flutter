@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xmaps_app/blocs/gps/gps_bloc.dart';
 
 class GpsAccessWidget extends StatelessWidget {
   const GpsAccessWidget({super.key});
@@ -6,7 +8,12 @@ class GpsAccessWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: AccessBtn(),
+        child: BlocBuilder<GpsBloc, GpsState>(
+          builder: (context, state) {
+            return state.isGPSEnable ? const AccessBtn() : const EnableGPSWidget();
+          },
+        ),
+        // child: AccessBtn(),
       ),
     );
   }
@@ -31,7 +38,9 @@ class AccessBtn extends StatelessWidget {
             "Grant Access",
             style: TextStyle(color: Colors.white),
           ),
-          onPressed: () {},
+          onPressed: () {
+            context.read<GpsBloc>().askGpsAccess();
+          },
         )
       ],
     );
@@ -47,7 +56,7 @@ class EnableGPSWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Text(
       'Must enable GPS access',
-      style: TextStyle(fontSize: 25, fontWeight: FontWeight.w300),
+      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
     );
   }
 }

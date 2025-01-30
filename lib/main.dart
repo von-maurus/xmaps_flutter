@@ -1,6 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xmaps_app/blocs/gps/gps_bloc.dart';
+import 'package:xmaps_app/common/widgets/loading_widget.dart';
 
-void main() => runApp(const XMapsApp());
+void main() {
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => GpsBloc(),
+        ),
+      ],
+      child: const XMapsApp(),
+    ),
+  );
+}
 
 class XMapsApp extends StatelessWidget {
   const XMapsApp({super.key});
@@ -11,12 +25,8 @@ class XMapsApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'xMaps',
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Material App Bar'),
-        ),
-        body: const Center(
-          child: Text('Hello World'),
-        ),
+        appBar: AppBar(title: const Text('xMaps')),
+        body: const LoadingWidget(),
       ),
     );
   }
