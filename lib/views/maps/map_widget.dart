@@ -4,9 +4,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:xmaps_app/blocs/blocs.dart';
 
 class MapWidget extends StatelessWidget {
+  final Set<Polyline> polylines;
   final LatLng initialPosition;
 
-  const MapWidget({super.key, required this.initialPosition});
+  MapWidget({super.key, required this.initialPosition, required this.polylines});
 
   @override
   Widget build(BuildContext context) {
@@ -17,24 +18,28 @@ class MapWidget extends StatelessWidget {
         return SizedBox(
           width: constraints.maxWidth,
           height: constraints.maxHeight,
-          child: GoogleMap(
-            style: mapBloc.mapStyle,
-            zoomGesturesEnabled: true,
-            zoomControlsEnabled: true,
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false,
-            compassEnabled: true,
-            mapType: MapType.normal,
-            initialCameraPosition: CameraPosition(
-              target: initialPosition,
-              zoom: 19.5,
-              bearing: -10,
-              tilt: 100,
+          child: Listener(
+            onPointerMove: (event) => mapBloc.add(const OnStopFollowingUser()),
+            child: GoogleMap(
+              polylines: polylines,
+              style: mapBloc.mapStyle,
+              zoomGesturesEnabled: true,
+              zoomControlsEnabled: true,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              compassEnabled: true,
+              mapType: MapType.normal,
+              initialCameraPosition: CameraPosition(
+                target: initialPosition,
+                zoom: 19.5,
+                bearing: -10,
+                tilt: 100,
+              ),
+              onMapCreated: (controller) => mapBloc.add(OnMapInitialized(controller)),
+              // TODO: polylines
+              // TODO: map movement
+              // TODO: markers
             ),
-            onMapCreated: (controller) => mapBloc.add(OnMapInitialized(controller)),
-            // TODO: polylines
-            // TODO: map movement
-            // TODO: markers
           ),
         );
       },

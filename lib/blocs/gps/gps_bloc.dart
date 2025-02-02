@@ -8,7 +8,7 @@ part 'gps_state.dart';
 
 class GpsBloc extends Bloc<GpsEvent, GpsState> {
   StreamSubscription? streamGpsSubscription;
-  
+
   GpsBloc() : super(const GpsState(isGPSEnable: false, isGPSPermissionGranted: false)) {
     on<GpsAndPermissionEvent>((event, emit) {
       emit(state.copyWith(
@@ -58,7 +58,6 @@ class GpsBloc extends Bloc<GpsEvent, GpsState> {
 
   @override
   Future<void> close() {
-    // TODO: implement close
     streamGpsSubscription?.cancel();
     return super.close();
   }

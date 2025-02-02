@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:xmaps_app/blocs/blocs.dart';
+import 'package:xmaps_app/common/widgets/toggle_user_route_btn_widget.dart';
 import 'package:xmaps_app/common/widgets/widgets.dart';
 import 'package:xmaps_app/views/maps/map_widget.dart';
 
@@ -34,6 +36,8 @@ class _MapWidgetState extends State<MapView> {
       floatingActionButton: const Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          ToggleUserRouteBtnWidget(),
+          FollowUserBtnWidget(),
           CurrentLocationBtnWidget(),
         ],
       ),
@@ -42,14 +46,25 @@ class _MapWidgetState extends State<MapView> {
           if (state.lastKnownLocation == null) {
             return const Center(child: Text("Waiting new location..."));
           }
-          return Stack(
-            children: [
-              MapWidget(initialPosition: state.lastKnownLocation!),
-              // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
-              // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
-              // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
-              // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
-            ],
+          return BlocBuilder<MapBloc, MapState>(
+            builder: (context, mapState) {
+              final Map<PolylineId, Polyline> polylines = Map.from(mapState.polylines);
+              if (!mapState.showMyRoute) {
+                polylines.removeWhere((key, value) => key == const PolylineId("myNewRoute"));
+              }
+              return Stack(
+                children: [
+                  MapWidget(
+                    initialPosition: state.lastKnownLocation!,
+                    polylines: polylines.values.toSet(),
+                  ),
+                  // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
+                  // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
+                  // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
+                  // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
+                ],
+              );
+            },
           );
         },
       ),
