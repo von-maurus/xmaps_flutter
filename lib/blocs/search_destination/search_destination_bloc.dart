@@ -13,6 +13,11 @@ class SearchDestinationBloc extends Bloc<SearchDestinationEvent, SearchDestinati
   SearchDestinationBloc({required this.trafficService}) : super(const SearchDestinationState()) {
     on<OnActivateManualMarkerEvent>((event, emit) => emit(state.copyWith(displayManualMarker: true)));
     on<OnDeactivateManualMarkerEvent>((event, emit) => emit(state.copyWith(displayManualMarker: false)));
+    on<OnNewPlacesEvent>((event, emit) => emit(state.copyWith(places: event.places)));
+    on<OnAddToHistoryEvent>((event, emit) {
+      final history = List.of(state.history)..insert(0, event.place);
+      emit(state.copyWith(history: history));
+    });
   }
 
   Future<RouteDestination> getNewRoute(LatLng start, LatLng end) async {
@@ -24,5 +29,10 @@ class SearchDestinationBloc extends Bloc<SearchDestinationEvent, SearchDestinati
     final points = result.map((point) => LatLng(point.latitude, point.longitude)).toList();
 
     return RouteDestination(points: points, duration: duration, distance: distance);
+  }
+
+  Future<void> getPlacesByQuery(LatLng proximity, String query) async {
+    final places = await trafficService.getResultsByQuery(proximity, query);
+    add(OnNewPlacesEvent(places: places));
   }
 }

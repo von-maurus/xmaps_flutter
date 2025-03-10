@@ -4,42 +4,30 @@ import 'package:xmaps_app/models/models.dart';
 import 'package:xmaps_app/services/services.dart';
 
 class TrafficService {
-  final Dio _dio = Dio()..interceptors.add(TrafficInterceptor());
+  final Dio _dioTraffic;
+  final Dio _dioPlaces;
   final String _baseUrl = 'https://api.mapbox.com/directions/v5/mapbox';
+  final String _basePlacesUrl = 'https://api.mapbox.com/search/geocode/v6/forward';
 
-  TrafficService() {
-    _dio.options.baseUrl = _baseUrl;
-    _dio.options.connectTimeout = const Duration(seconds: 5); // 5 seconds
-    _dio.options.receiveTimeout = const Duration(seconds: 3); // 3 seconds
-  }
+  TrafficService()
+      : _dioTraffic = Dio()..interceptors.add(TrafficInterceptor()),
+        _dioPlaces = Dio()..interceptors.add(PlacesInterceptor());
 
   Future<TrafficResponse> getLatLong(LatLng start, LatLng end) async {
     final coordinates = "${start.longitude}, ${start.latitude}; ${end.longitude}, ${end.latitude}";
-    final endpoint = "/driving/$coordinates";
-    final response = await _dio.get(endpoint);
+    final endpoint = "$_baseUrl/driving/$coordinates";
+    final response = await _dioTraffic.get(endpoint);
     final parsing = TrafficResponse.fromMap(response.data);
     return parsing;
   }
 
-  Future<Response> getTrafficData(String endpoint, {Map<String, dynamic>? queryParameters}) async {
-    try {
-      final response = await _dio.get(endpoint, queryParameters: queryParameters);
-      return response;
-    } on DioException catch (e) {
-      // Handle error
-      print('Error: $e');
-      throw e;
-    }
-  }
-
-  Future<Response> postTrafficData(String endpoint, Map<String, dynamic> data) async {
-    try {
-      final response = await _dio.post(endpoint, data: data);
-      return response;
-    } on DioException catch (e) {
-      // Handle error
-      print('Error: $e');
-      throw e;
-    }
+  Future<List<Feature>> getResultsByQuery(LatLng proximity, String query) async {
+    if (query.isEmpty) return [];
+    final res = await _dioPlaces.get(
+      _basePlacesUrl,
+      queryParameters: {'q': query, 'proximity': '${proximity.longitude}, ${proximity.latitude}'},
+    );
+    final places = PlacesResponse.fromMap(res.data);
+    return places.features;
   }
 }

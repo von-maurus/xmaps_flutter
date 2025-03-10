@@ -20,3 +20,15 @@ class OnDeactivateManualMarkerEvent extends SearchDestinationEvent {
   @override
   List<Object> get props => [];
 }
+
+class OnNewPlacesEvent extends SearchDestinationEvent {
+  final List<Feature> places;
+
+  const OnNewPlacesEvent({required this.places});
+}
+
+class OnAddToHistoryEvent extends SearchDestinationEvent {
+  final Feature place;
+
+  const OnAddToHistoryEvent({required this.place});
+}

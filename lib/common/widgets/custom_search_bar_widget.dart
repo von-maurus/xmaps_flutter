@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xmaps_app/blocs/blocs.dart';
 import 'package:xmaps_app/common/delegates/delegates.dart';
+import 'package:xmaps_app/helpers/helpers.dart';
 
 class CustomSearchBarWidget extends StatelessWidget {
   const CustomSearchBarWidget({super.key});
@@ -12,12 +13,22 @@ class CustomSearchBarWidget extends StatelessWidget {
       context: context,
       delegate: SearchDestinationDelegate(destinations: ["Cambiar a ubicación manual"]),
     );
+    if (!context.mounted) return;
+    showLoadingMessage(context);
+    final searchBloc = BlocProvider.of<SearchDestinationBloc>(context);
+    final mapBloc = BlocProvider.of<MapBloc>(context);
+    final currentLocation = BlocProvider.of<LocationBloc>(context).state.lastKnownLocation;
     if (result != null && result.manual) {
-      if (context.mounted) {
-        final searchBloc = BlocProvider.of<SearchDestinationBloc>(context);
-        searchBloc.add(const OnActivateManualMarkerEvent());
-        return;
-      }
+      searchBloc.add(const OnActivateManualMarkerEvent());
+      Navigator.of(context).pop();
+      return;
+    }
+    final pos = result?.position;
+    if (pos != null && currentLocation != null) {
+      final destination = await searchBloc.getNewRoute(currentLocation, pos);
+      await mapBloc.drawRouteDestination(destination);
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
     }
   }
 
