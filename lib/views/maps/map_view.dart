@@ -58,6 +58,8 @@ class _MapWidgetState extends State<MapView> {
                     initialPosition: state.lastKnownLocation!,
                     polylines: polylines.values.toSet(),
                   ),
+                  const CustomSearchBarWidget(),
+                  const CustomManualMarkerWidget()
                   // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
                   // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
                   // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),

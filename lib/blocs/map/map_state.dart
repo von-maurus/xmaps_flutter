@@ -13,8 +13,12 @@ class MapState extends Equatable {
     this.showMyRoute = true,
   });
 
-  MapState copyWith(
-      {bool? isMapInitialized, bool? followUser, Map<PolylineId, Polyline>? polylines, bool? showMyRoute}) {
+  MapState copyWith({
+    bool? isMapInitialized,
+    bool? followUser,
+    Map<PolylineId, Polyline>? polylines,
+    bool? showMyRoute,
+  }) {
     return MapState(
       isMapInitialized: isMapInitialized ?? this.isMapInitialized,
       followUser: followUser ?? this.followUser,

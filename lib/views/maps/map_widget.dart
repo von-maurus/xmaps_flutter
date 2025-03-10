@@ -7,7 +7,7 @@ class MapWidget extends StatelessWidget {
   final Set<Polyline> polylines;
   final LatLng initialPosition;
 
-  MapWidget({super.key, required this.initialPosition, required this.polylines});
+  const MapWidget({super.key, required this.initialPosition, required this.polylines});
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +21,7 @@ class MapWidget extends StatelessWidget {
           child: Listener(
             onPointerMove: (event) => mapBloc.add(const OnStopFollowingUser()),
             child: GoogleMap(
+              key: key,
               polylines: polylines,
               style: mapBloc.mapStyle,
               zoomGesturesEnabled: true,
@@ -29,16 +30,14 @@ class MapWidget extends StatelessWidget {
               myLocationButtonEnabled: false,
               compassEnabled: true,
               mapType: MapType.normal,
+              onCameraMove: (position) => mapBloc.mapCenter = position.target,
+              onMapCreated: (controller) => mapBloc.add(OnMapInitialized(controller)),
               initialCameraPosition: CameraPosition(
                 target: initialPosition,
-                zoom: 19.5,
+                zoom: 15,
                 bearing: -10,
-                tilt: 100,
+                tilt: 90,
               ),
-              onMapCreated: (controller) => mapBloc.add(OnMapInitialized(controller)),
-              // TODO: polylines
-              // TODO: map movement
-              // TODO: markers
             ),
           ),
         );

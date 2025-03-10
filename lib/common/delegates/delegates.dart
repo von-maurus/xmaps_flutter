@@ -1,0 +1,1 @@
+export 'package:xmaps_app/common/delegates/search_destination_delegate.dart';
