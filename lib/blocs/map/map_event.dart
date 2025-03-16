@@ -36,7 +36,8 @@ class UpdateUserPolylines extends MapEvent {
 class OnToggleUserRoute extends MapEvent {}
 
 class OnNewRoute extends MapEvent {
-  final Map<PolylineId, Polyline> polylines;
+  final Map<String, Polyline> polylines;
+  final Map<String, Marker> markers;
 
-  const OnNewRoute(this.polylines);
+  const OnNewRoute(this.polylines, this.markers);
 }

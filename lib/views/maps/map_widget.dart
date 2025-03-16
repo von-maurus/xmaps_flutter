@@ -5,9 +5,10 @@ import 'package:xmaps_app/blocs/blocs.dart';
 
 class MapWidget extends StatelessWidget {
   final Set<Polyline> polylines;
+  final Set<Marker> markers;
   final LatLng initialPosition;
 
-  const MapWidget({super.key, required this.initialPosition, required this.polylines});
+  const MapWidget({super.key, required this.initialPosition, required this.polylines, required this.markers});
 
   @override
   Widget build(BuildContext context) {
@@ -19,17 +20,18 @@ class MapWidget extends StatelessWidget {
           width: constraints.maxWidth,
           height: constraints.maxHeight,
           child: Listener(
-            onPointerMove: (event) => mapBloc.add(const OnStopFollowingUser()),
+            onPointerMove: (_) => mapBloc.add(const OnStopFollowingUser()),
             child: GoogleMap(
               key: key,
-              polylines: polylines,
-              style: mapBloc.mapStyle,
-              zoomGesturesEnabled: true,
-              zoomControlsEnabled: true,
+              mapToolbarEnabled: false,
+              buildingsEnabled: false,
               myLocationEnabled: true,
               myLocationButtonEnabled: false,
-              compassEnabled: true,
-              mapType: MapType.normal,
+              compassEnabled: false,
+              mapType: MapType.satellite,
+              polylines: polylines,
+              markers: markers,
+              style: mapBloc.mapStyle,
               onCameraMove: (position) => mapBloc.mapCenter = position.target,
               onMapCreated: (controller) => mapBloc.add(OnMapInitialized(controller)),
               initialCameraPosition: CameraPosition(

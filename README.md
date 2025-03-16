@@ -10,8 +10,8 @@ A Maps test application for learning purposes. Made based on the Flutter Advance
 - Permissions management for both platforms.
 - Location and realtime.
 - Linter configuration.
-- Map custom design. 
-- Markers custom design.
+- Map custom design (Google Maps + Mapbox themes and designs). 
+- Custom markers (as assets) and native Google Maps markers.
 
 
 ## Getting Started

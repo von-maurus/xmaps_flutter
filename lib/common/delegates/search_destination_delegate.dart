@@ -7,9 +7,7 @@ import 'package:xmaps_app/blocs/blocs.dart';
 import 'package:xmaps_app/models/models.dart';
 
 class SearchDestinationDelegate extends SearchDelegate<SearchLocationResult> {
-  final List<String> destinations;
-
-  SearchDestinationDelegate({required this.destinations}) : super(searchFieldLabel: 'Buscar...');
+  SearchDestinationDelegate() : super(searchFieldLabel: 'Buscar...');
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -49,11 +47,11 @@ class SearchDestinationDelegate extends SearchDelegate<SearchLocationResult> {
             final place = places[index];
             return ListTile(
               title: Text(
-                place.properties.fullAddress,
+                place.text,
                 style: const TextStyle(fontSize: 12, color: Colors.black),
               ),
               subtitle: Text(
-                place.properties.name,
+                place.placeName,
                 style: const TextStyle(fontSize: 12, color: Colors.black),
               ),
               leading: const Icon(
@@ -64,9 +62,9 @@ class SearchDestinationDelegate extends SearchDelegate<SearchLocationResult> {
                 final res = SearchLocationResult(
                   canceled: false,
                   manual: false,
-                  position: LatLng(place.properties.coordinates.latitude, place.properties.coordinates.longitude),
-                  name: place.properties.fullAddress,
-                  description: place.properties.name,
+                  position: LatLng(place.geometry.coordinates[1], place.geometry.coordinates[0]),
+                  name: place.text,
+                  description: place.placeName,
                 );
                 searchBloc.add(OnAddToHistoryEvent(place: place));
                 close(context, res);
@@ -80,39 +78,35 @@ class SearchDestinationDelegate extends SearchDelegate<SearchLocationResult> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final searchBloc = BlocProvider.of<SearchDestinationBloc>(context);
     final suggestions = BlocProvider.of<SearchDestinationBloc>(context).state.history;
-    return ListView.separated(
-      itemCount: suggestions.length,
-      separatorBuilder: (context, index) => const Divider(),
-      itemBuilder: (context, index) {
-        final place = suggestions[index];
-        return ListTile(
-          title: Text(
-            place.properties.fullAddress,
-            style: const TextStyle(color: Colors.black),
-          ),
-          subtitle: Text(
-            place.properties.name,
-            style: const TextStyle(fontSize: 12, color: Colors.black),
-          ),
-          leading: const Icon(
-            Icons.place_outlined,
-            color: Colors.black,
-          ),
+    return ListView(
+      children: [
+        ListTile(
+          leading: const Icon(Icons.location_on_outlined, color: Colors.black),
+          title: const Text('Put location manually', style: TextStyle(color: Colors.black)),
           onTap: () {
-            final res = SearchLocationResult(
-              canceled: false,
-              manual: false,
-              position: LatLng(place.properties.coordinates.latitude, place.properties.coordinates.longitude),
-              name: place.properties.fullAddress,
-              description: place.properties.name,
-            );
-            searchBloc.add(OnAddToHistoryEvent(place: place));
-            close(context, res);
+            final result = SearchLocationResult(canceled: false, manual: true);
+            close(context, result);
           },
-        );
-      },
+        ),
+        ...suggestions.map(
+          (place) => ListTile(
+            title: Text(place.text),
+            subtitle: Text(place.placeName),
+            leading: const Icon(Icons.history, color: Colors.black),
+            onTap: () {
+              final result = SearchLocationResult(
+                canceled: false,
+                manual: false,
+                position: LatLng(place.geometry.coordinates[1], place.geometry.coordinates[0]),
+                name: place.text,
+                description: place.placeName,
+              );
+              close(context, result);
+            },
+          ),
+        )
+      ],
     );
   }
 }

@@ -7,7 +7,7 @@ class TrafficService {
   final Dio _dioTraffic;
   final Dio _dioPlaces;
   final String _baseUrl = 'https://api.mapbox.com/directions/v5/mapbox';
-  final String _basePlacesUrl = 'https://api.mapbox.com/search/geocode/v6/forward';
+  final String _basePlacesUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
 
   TrafficService()
       : _dioTraffic = Dio()..interceptors.add(TrafficInterceptor()),
@@ -23,11 +23,21 @@ class TrafficService {
 
   Future<List<Feature>> getResultsByQuery(LatLng proximity, String query) async {
     if (query.isEmpty) return [];
-    final res = await _dioPlaces.get(
-      _basePlacesUrl,
-      queryParameters: {'q': query, 'proximity': '${proximity.longitude}, ${proximity.latitude}'},
+
+    final url = '$_basePlacesUrl/$query.json';
+    final resp = await _dioPlaces.get(
+      url,
+      queryParameters: {'proximity': '${proximity.longitude},${proximity.latitude}', 'limit': 7},
     );
-    final places = PlacesResponse.fromMap(res.data);
-    return places.features;
+    final placesResponse = PlacesResponse.fromMap(resp.data);
+
+    return placesResponse.features;
+  }
+
+  Future<Feature> getInfoByCoordinates(LatLng coordinate) async {
+    final url = "$_basePlacesUrl/${coordinate.longitude},${coordinate.latitude}.json";
+    final res = await _dioPlaces.get(url, queryParameters: {'limit': 1});
+    final placesResponse = PlacesResponse.fromMap(res.data);
+    return placesResponse.features[0];
   }
 }

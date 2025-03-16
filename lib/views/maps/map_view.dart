@@ -48,22 +48,19 @@ class _MapWidgetState extends State<MapView> {
           }
           return BlocBuilder<MapBloc, MapState>(
             builder: (context, mapState) {
-              final Map<PolylineId, Polyline> polylines = Map.from(mapState.polylines);
+              final Map<String, Polyline> polylines = Map.from(mapState.polylines);
               if (!mapState.showMyRoute) {
-                polylines.removeWhere((key, value) => key == const PolylineId("myNewRoute"));
+                polylines.removeWhere((key, value) => key == "myRoute");
               }
               return Stack(
                 children: [
                   MapWidget(
                     initialPosition: state.lastKnownLocation!,
                     polylines: polylines.values.toSet(),
+                    markers: mapState.markers.values.toSet(),
                   ),
                   const CustomSearchBarWidget(),
                   const CustomManualMarkerWidget()
-                  // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
-                  // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
-                  // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
-                  // ElevatedButton(onPressed: () {}, child: Text('BUTTON')),
                 ],
               );
             },

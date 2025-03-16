@@ -33,12 +33,18 @@ class Feature {
   final String id;
   final Geometry geometry;
   final Properties properties;
+  final String text;
+  final String placeName;
+  final List<double> center;
 
   Feature({
     required this.type,
     required this.id,
     required this.geometry,
     required this.properties,
+    required this.text,
+    required this.placeName,
+    required this.center,
   });
 
   factory Feature.fromJson(String str) => Feature.fromMap(json.decode(str));
@@ -50,6 +56,9 @@ class Feature {
         id: json["id"],
         geometry: Geometry.fromMap(json["geometry"]),
         properties: Properties.fromMap(json["properties"]),
+        text: json["text"],
+        placeName: json["place_name"],
+        center: List<double>.from(json["center"].map((x) => x.toDouble())),
       );
 
   Map<String, dynamic> toMap() => {
@@ -90,26 +99,28 @@ class Geometry {
 }
 
 class Properties {
-  final String mapboxId;
-  final String featureType;
+  final String? mapboxId;
+  final String? featureType;
   final String fullAddress;
   final String name;
   final String namePreferred;
-  final Coordinates coordinates;
+  final Coordinates? coordinates;
   final List<double>? bbox;
-  final Context context;
+  final Context? context;
   final String? placeFormatted;
+  final String? accuracy;
 
   Properties({
-    required this.mapboxId,
-    required this.featureType,
+    this.mapboxId,
+    this.featureType,
     required this.fullAddress,
     required this.name,
     required this.namePreferred,
-    required this.coordinates,
+    this.coordinates,
     this.bbox,
-    required this.context,
+    this.context,
     this.placeFormatted,
+    this.accuracy,
   });
 
   factory Properties.fromJson(String str) => Properties.fromMap(json.decode(str));
@@ -117,15 +128,16 @@ class Properties {
   String toJson() => json.encode(toMap());
 
   factory Properties.fromMap(Map<String, dynamic> json) => Properties(
-        mapboxId: json["mapbox_id"],
-        featureType: json["feature_type"],
-        fullAddress: json["full_address"],
-        name: json["name"],
-        namePreferred: json["name_preferred"],
-        coordinates: Coordinates.fromMap(json["coordinates"]),
+        mapboxId: json["mapbox_id"] ?? '',
+        featureType: json["feature_type"] ?? '',
+        fullAddress: json["full_address"] ?? '',
+        name: json["name"] ?? '',
+        namePreferred: json["name_preferred"] ?? '',
+        coordinates: json["coordinates"] == null ? null : Coordinates.fromMap(json["coordinates"]),
         bbox: json["bbox"] == null ? null : List<double>.from(json["bbox"].map((x) => x?.toDouble())),
-        context: Context.fromMap(json["context"]),
-        placeFormatted: json["place_formatted"],
+        context: json["context"] == null ? null : Context.fromMap(json["context"]),
+        placeFormatted: json["place_formatted"] ?? '',
+        accuracy: json["accuracy"] ?? '',
       );
 
   Map<String, dynamic> toMap() => {
@@ -134,9 +146,9 @@ class Properties {
         "full_address": fullAddress,
         "name": name,
         "name_preferred": namePreferred,
-        "coordinates": coordinates.toMap(),
+        "coordinates": coordinates?.toMap(),
         "bbox": bbox == null ? [] : List<dynamic>.from(bbox!.map((x) => x)),
-        "context": context.toMap(),
+        "context": context?.toMap(),
         "place_formatted": placeFormatted,
       };
 }

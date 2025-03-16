@@ -1,14 +1,13 @@
 import 'package:dio/dio.dart';
 
 class PlacesInterceptor extends Interceptor {
-  final token = "pk.eyJ1IjoibXNhbnoiLCJhIjoiY203NHptazVrMDZkaTJqcHJoaXBvbXFrcSJ9.jO65-CEVP9p71D7OxeWSEw";
+  final token = "pk.eyJ1IjoibXNhbnoiLCJhIjoiY203NHpnaW9jMGd4cjJqcHowMTRhc3RoaCJ9.xg9MDZv9G_jdzf_85kQSKA";
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     options.queryParameters.addAll({
       'access_token': token,
       'language': 'es',
-      'limit': 6,
     });
     super.onRequest(options, handler);
   }

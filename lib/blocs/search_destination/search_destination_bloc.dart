@@ -22,13 +22,15 @@ class SearchDestinationBloc extends Bloc<SearchDestinationEvent, SearchDestinati
 
   Future<RouteDestination> getNewRoute(LatLng start, LatLng end) async {
     final res = await trafficService.getLatLong(start, end);
+    // informacion del destino
+    final endPlace = await trafficService.getInfoByCoordinates(end);
     final distance = res.routes[0].distance;
     final duration = res.routes[0].duration;
     final geometry = res.routes[0].geometry;
     final List<PointLatLng> result = PolylinePoints().decodePolyline(geometry);
     final points = result.map((point) => LatLng(point.latitude, point.longitude)).toList();
 
-    return RouteDestination(points: points, duration: duration, distance: distance);
+    return RouteDestination(points: points, duration: duration, distance: distance, endPlace: endPlace);
   }
 
   Future<void> getPlacesByQuery(LatLng proximity, String query) async {
